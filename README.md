@@ -1,5 +1,5 @@
 # TEMA1_POO
-  Aceasta problema ofera anumite informatii pentru primul an universitar al Facultatii de Matematica si Informatica al Universitatii Bucuresti, mai exact:
+  Aceasta problema ofera anumite informatii pentru primul an universitar al Facultatii de Matematica si Informatica a Universitatii Bucuresti, mai exact:
 materiile studiate in functie de domeniul de licenta ales si semestru, afisarea numarului de locuri pentru buget, respectiv taxa, diferenta dintre acestea,
 precum si incadrarea la buget sau taxa a 3 dintre studenti.
 
