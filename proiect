@@ -1,0 +1,300 @@
+//Aceasta problema ofera anumite informatii pentru primul an universitar al Facultatii de Matematica si Informatica al Universitatii Bucuresti, mai exact:
+//materiile studiate in functie de domeniul de licenta ales si semestru, afisarea numarului de locuri pentru buget, respectiv taxa, diferenta dintre acestea,
+//precum si incadrarea la buget sau taxa a 3 dintre studenti.
+
+//Datele de intrare:
+//-un vector de string-uri, numit "domenii de licenta", ce contine numele tuturor domeniilor de licenta de la facultate
+//-variabilele d1, d2, d3, s1, s2 ce reprezinta numele fiecarui domeniu de licenta, precum si fiecare semestru
+//-variabilele medie1, medie2, medie3 ce reprezinta mediile pentru fiecare dintre cei 3 studenti;
+
+//Operatii:
+//Pe parcursul rezolvarii problemei, am folosit modificatori de acces, constructori de initializare, constructori impliciti, destructori, getteri si setteri, suparincarcarea operatorilor "=" si "<<", metode, clase nested, functii prieten si functii inline.
+
+//Cerinte:
+//Afisati toate domeniile facultatii alese.
+//Pentru fiecare domeniu al facultatii si semestrul ales, afisati disciplinele din programa, fiecare pe cate o linie.
+//Pentru fiecare domeniu al facultatii, afisati numarul de locuri de la buget, numarul de locuri de la taxa, precum si diferenta dintre acestea.
+//In functie de datele scrise pentru 3 studenti de la facultate, verificati daca acestia sunt la buget sau la taxa.
+
+//proiect.h:
+
+#ifndef PROIECT_H_INCLUDED
+#define PROIECT_H_INCLUDED
+
+#include <vector>
+using namespace std;
+
+
+class Facultate{
+    string nume;
+    int nr_domenii;
+    string domenii_de_licenta[10];
+
+public:
+    Facultate (const string& nume_, int nr_domenii_);
+    const string& getNume() const;
+    int getNr_domenii() const;
+    void setDomenii(int i, string domeniu);
+    const string& getDomenii(int i) const;
+    friend ostream& operator<<(ostream& out, const  Facultate& f);
+    inline void afisareDomeniu(Facultate& f, int i) const;
+
+    class Domeniu{
+        string nume;
+        int nr_discipline;
+        vector<string> discipline;
+        int nr_studenti_taxa;
+        int nr_studenti_buget;
+        string semestru;
+        float medie_admitere_buget;
+        int diferenta;
+
+    public:
+        Domeniu();
+        const string& getNume () const{ return nume; }
+        int getNr_discipline () const{ return nr_discipline; }
+        const string& getDiscipline (int i) const{ return discipline[i]; }
+        int getNr_studenti_taxa () const{ return nr_studenti_taxa; }
+        int getNr_studenti_buget () const{ return nr_studenti_buget; }
+        const string& getSemestru () const{ return semestru; }
+        float getMedie () const{ return medie_admitere_buget; }
+        void setDiscipline (int i, string disciplina){ discipline[i] = disciplina; }
+        void setNr_discipline (){ nr_discipline = discipline.size(); }
+        void setNr_studenti_taxa ( int nr_studenti_taxa_ ){ nr_studenti_taxa = nr_studenti_taxa_; }
+        void setNr_studenti_buget ( int nr_studenti_buget_ ){ nr_studenti_buget = nr_studenti_buget_; }
+        void setSemestru (string semestru_) { semestru = semestru_; }
+        void setMedieAdmitereBuget (float medie_admitere_buget_) { medie_admitere_buget = medie_admitere_buget_; }
+        void afisareDiferentaNrLocuri_TB ();
+        inline Domeniu& operator=(string d);
+        void nrLocuri_TB ();
+        void disciplineSemestru_Curent ();
+        void listaDiscipline ();
+        void afisareStudenti_TB ();
+    };
+
+    class Student{
+        string nume;
+        int nr_credite;
+        float medie;
+        int grupa;
+        string domeniu;
+        float medie_admitere_buget;
+
+    public:
+        Student();
+        Student ( const string& nume_, int nr_credite_, float medie_, int grupa_, const string& domeniu_);
+        const string& getNume () const;
+        int getNr_credite () const;
+        float getMedie () const;
+        int getGrupa () const;
+        const string& getDomeniu () const;
+        float getMedieAdmitereBuget ();
+        Student& operator=(Student& other);
+    };
+
+    bool admitereBuget (Student& s);
+    void afisareAdmitereBuget (Student& s);
+};
+#endif // PROIECT_H_INCLUDED
+
+//proiect.cpp:
+
+#include "proiect.h"
+#include <iostream>
+
+///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CONTINUT CLASA FACULTATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///
+Facultate :: Facultate (const string& nume_, int nr_domenii_){
+    nume = nume_;
+    nr_domenii = nr_domenii_;
+}
+const string& Facultate :: getNume() const{ return nume; }
+int Facultate :: getNr_domenii() const{ return nr_domenii; }
+void Facultate :: setDomenii(int i, string domeniu){ domenii_de_licenta[i] = domeniu; }
+const string& Facultate :: getDomenii(int i) const{ return domenii_de_licenta[i]; }
+ostream& operator<<(ostream& out, const  Facultate& f) {
+    out << "~~~" << f.getNume() << "~~~" << "\n";
+    return out;
+}
+inline void Facultate :: afisareDomeniu(Facultate& f, int i) const {
+    cout << "~~~" << f.getDomenii(i) << "~~~" << "\n";
+}
+
+///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CONTINUT CLASA DOMENIU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///
+Facultate :: Domeniu :: Domeniu(){}
+
+void Facultate :: Domeniu :: afisareDiferentaNrLocuri_TB () {
+    if (nr_studenti_buget > nr_studenti_taxa){
+        diferenta = nr_studenti_buget - nr_studenti_taxa;
+    }
+    else diferenta = nr_studenti_taxa - nr_studenti_taxa;
+    cout << "\n   ->Diferenta dintre numarul de locuri de la buget si numarul de locuri de la taxa este: " << diferenta << "\n";
+}
+
+inline Facultate :: Domeniu& :: Facultate :: Domeniu :: operator=(string d){ ///declararea operatorului "=" pentru clasa Domeniu
+    nume = d;
+    return *this;
+}
+
+void Facultate :: Domeniu :: nrLocuri_TB () {
+    if(nume == "Informatica"){
+        nr_studenti_buget = 206;
+        nr_studenti_taxa = 44;
+        medie_admitere_buget = 6.71;
+    }
+    else if (nume == "Matematica"){
+        nr_studenti_buget = 109;
+        nr_studenti_taxa = 100;
+        medie_admitere_buget = 5.35;
+    }
+        else if (nume == "Calculatoare si Tehnologia Informatiei"){
+            nr_studenti_buget = 85;
+            nr_studenti_taxa = 15;
+            medie_admitere_buget = 5.12;
+        }
+}
+
+void Facultate :: Domeniu :: disciplineSemestru_Curent (){
+    if (semestru == "Semestrul I"){
+        if (nume == "Informatica"){
+            discipline = {"Arhitectura Sistemelor de Calcul","Programarea Algoritmilor","Instrumente si Tehnici de Baza in Informatica",
+                            "Tehnici Web","Calcul Diferential si Integral","Structuri Algebrice in Informatica"};
+        }
+        else if (nume == "Matematica"){
+            discipline = {"Programare Procedurala", "Algebra", "Geometrie I", "Algebra liniara", "Analiza matematica I"};
+        }
+            else if (nume == "Calculatoare si Tehnologia Informatiei"){
+                discipline = {"Utilizarea sistemelor de operare", "Algebra si Geometrie", "Analiza matematica", "Programarea calculatoarelor"};
+            }
+    }
+    else if (semestru == "Semestrul II"){
+        if (nume == "Informatica"){
+            discipline = {"Structuri de Date","Limbaje Formale si Automate","Baze de Date","Programare Orientata pe Obiecte",
+                        "Logica Matematica si Computationala","Geometrie si Algebra Liniara"};
+        }
+        else if (nume == "Matematica"){
+            discipline = {"Logica matematica", "Elemente de calcul stiintific", "Geometrie II", "Algebra", "Analiza Matematica II"};
+        }
+            else if (nume == "Calculatoare si Tehnologia Informatiei"){
+                discipline = {"Grafica asistata pe calculator", "Calcul numeric", "Matematici speciale", "Programarea calculatoarelor II"};
+            }
+    }
+}
+
+void Facultate :: Domeniu :: listaDiscipline () {
+    cout << "\n";
+    for (int i = 0; i < nr_discipline; i++){
+        cout << "~" << discipline[i] << "~" << "\n";
+    }
+    cout << "\n";
+}
+
+void Facultate :: Domeniu :: afisareStudenti_TB () {
+    cout << "   ->Pentru domeniul " << nume << ", numarul locurilor disponibile pentru buget este " << nr_studenti_buget << ", iar pentru taxa este " << nr_studenti_taxa;
+}
+///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!CONTINUT CLASA STUDENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///
+Facultate :: Student :: Student(){}
+Facultate :: Student :: Student ( const string& nume_, int nr_credite_, float medie_, int grupa_, const string& domeniu_){
+    nume = nume_;
+    nr_credite = nr_credite_;
+    medie = medie_;
+    grupa = grupa_;
+    domeniu = domeniu_;
+};
+const string& Facultate :: Student :: getNume () const{ return nume; }
+int Facultate :: Student ::getNr_credite () const{ return nr_credite; }
+float Facultate :: Student :: getMedie () const{ return medie; }
+int Facultate :: Student :: getGrupa () const{ return grupa; }
+const string& Facultate :: Student :: getDomeniu () const{ return domeniu; }
+float Facultate :: Student :: getMedieAdmitereBuget () {
+    if (domeniu == "Informatica"){
+        medie_admitere_buget = 6.71;
+    }
+    else if (domeniu == "Matematica"){
+        medie_admitere_buget = 5.35;
+    }
+        else if (domeniu == "Calculatoare si Tehnologia Informatiei"){
+            medie_admitere_buget = 5.12;
+        }
+    return medie_admitere_buget;
+}
+
+Facultate::Student& :: Facultate::Student :: operator=(Student& other){
+    nume = other.nume;
+    grupa = other.grupa;
+    domeniu = other.domeniu;
+    return *this;
+}
+
+bool Facultate :: admitereBuget (Student& s) {
+    if (s.getMedie() >= s.getMedieAdmitereBuget()){
+        return true;
+    }
+    else return false;
+}
+
+void Facultate :: afisareAdmitereBuget (Student& s) {
+    cout << "\n   ->";
+    if (admitereBuget(s)){
+        cout << "Studentul " << s.getNume() << " de la grupa " << s.getGrupa() << " a fost admis la buget la domeniul " << s.getDomeniu() << ".";
+    }
+    else cout << "Studentul " << s.getNume() << " de la grupa " << s.getGrupa() << " nu a fost admis la buget la domeniul " << s.getDomeniu() << ".";
+}
+
+//main.cpp:
+
+#include <iostream>
+#include <vector>
+#include "proiect.h"
+#include "proiect.cpp"
+using namespace std;
+
+int main()
+{
+    vector<string> domenii_de_licenta = {"Informatica", "Matematica", "Calculatoare si Tehnologia Informatiei"};
+    Facultate facultate ("Facultatea de Matematica si Informatica",domenii_de_licenta.size());
+    cout << "\n" << "   ->BINE ATI VENIT LA:" << "\n\n";
+    cout << facultate;
+    cout << "\n" << "   ->IN CONTINUARE VA PREZENTAM DOMENIILE FACULTATII:" << "\n\n";
+    for (int i = 0; i < facultate.getNr_domenii(); ++i){
+        facultate.setDomenii(i,domenii_de_licenta[i]);
+        facultate.afisareDomeniu(facultate,i);
+    }
+    Facultate :: Domeniu domeniu;
+    string d1,d2,d3,s1,s2;
+    d1 = "Informatica";
+    d2 = "Matematica";
+    d3 = "Calculatoare si Tehnologia Informatiei";
+    s1 = "Semestrul I";
+    s2 = "Semestrul II";
+    domeniu = d1;
+    domeniu.setSemestru(s1);
+    domeniu.nrLocuri_TB();
+    domeniu.disciplineSemestru_Curent();
+    domeniu.setNr_discipline();
+    cout << "\n" << "   ->Bine ati venit la domeniul de licenta: " << domeniu.getNume() << "\n\n";
+    cout << "   ->In continuare veti studia:" << "\n";
+    domeniu.listaDiscipline();
+    domeniu.afisareStudenti_TB();
+    domeniu.afisareDiferentaNrLocuri_TB();
+
+    float medie1, medie2, medie3;
+    medie1 = 7.4;
+    medie2 = 5.5;
+    medie3 = 6.75;
+
+    Facultate :: Student student1("George", 40, medie1, 132, "Informatica");
+    Facultate :: Student student2("Mihai", 50, medie2, 104, "Matematica");
+    Facultate :: Student student3("Ionel", 45, medie3, 161, "Calculatoare si Tehnologia Informatiei");
+
+    facultate.afisareAdmitereBuget(student1);
+    facultate.afisareAdmitereBuget(student2);
+    facultate.afisareAdmitereBuget(student3);
+    cout << "\n";
+    return 0;
+}
+
+///Cerinte:
+///Afisati toate domeniile facultatii alese.
+///Pentru fiecare domeniu al facultatii si semestrul ales, afisati disciplinele din programa, fiecare pe cate o linie.
+///Pentru fiecare domeniu al facultatii, afisati numarul de locuri de la buget, numarul de locuri de la taxa, precum si diferenta dintre acestea.
+///In functie de datele scrise pentru 3 studenti de la facultate, verificati daca acestia sunt la buget sau la taxa.
